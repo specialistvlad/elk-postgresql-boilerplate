@@ -1,9 +1,13 @@
 version: '3'
 
 networks:
-  default:
-    external:
-      name: bridge
+  esnet:
+
+volumes:
+  esdata1:
+    driver: local
+  esdata2:
+    driver: local
 
 services:
   elastic-kibana-pg-postgresql:
@@ -22,19 +26,56 @@ services:
     logging:
         options:
             max-size: '50m'
-  #
-  # elastic-kibana-pg-elastic:
-  #   container_name: elastic-kibana-pg-elastic
-  #   build:
-  #     context: ./
-  #     dockerfile: ./apps/elastic.Dockerfile
-  #   image: elastic-kibana-pg-elastic
-  #   restart: always
-  #   ports:
-  #     - '127.0.0.1:5432:5432'
-  #   volumes:
-  #     - './volumes/elastic:/var/lib/elastic/'
-  #   network_mode: bridge
-  #   logging:
-  #       options:
-  #           max-size: '50m'
+
+  elasticsearch1:
+    image: docker.elastic.co/elasticsearch/elasticsearch:5.4.0
+    restart: always
+    container_name: elasticsearch1
+    environment:
+      - cluster.name=docker-cluster
+      - bootstrap.memory_lock=true
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    volumes:
+      - esdata1:/usr/share/elasticsearch/data
+    ports:
+      - 9200:9200
+    networks:
+      - esnet
+
+  elasticsearch2:
+    image: docker.elastic.co/elasticsearch/elasticsearch:5.4.0
+    restart: always
+    environment:
+      - cluster.name=docker-cluster
+      - bootstrap.memory_lock=true
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+      - "discovery.zen.ping.unicast.hosts=elasticsearch1"
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    volumes:
+      - esdata2:/usr/share/elasticsearch/data
+    networks:
+      - esnet
+
+  kibana:
+    container_name: elastic-kibana-pg-kibana
+    image: docker.elastic.co/kibana/kibana:5.4.0
+    restart: always
+    # volumes:
+      # - ./kibana.yml:/usr/share/kibana/config/kibana.yml
+    ports:
+      - 127.0.0.1:5601:5601
+    networks:
+      - esnet
+      - bridge
+    environment:
+      ELASTICSEARCH_URL: http://elasticsearch1:9200
+    logging:
+        options:
+            max-size: '50m'
