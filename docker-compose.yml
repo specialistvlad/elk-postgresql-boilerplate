@@ -13,9 +13,28 @@ services:
       dockerfile: ./apps/postgres.Dockerfile
     image: elastic-kibana-pg-postgres
     restart: always
+    ports:
+      - '127.0.0.1:5432:5432'
     volumes:
-      - './volumes/postgres:/usr/local/var/postgres'
+      - './volumes/postgres:/var/lib/postgresql/data'
+      # - '/usr/local/var/postgres/data:/var/lib/postgresql/data'
     network_mode: bridge
     logging:
         options:
             max-size: '50m'
+  #
+  # elastic-kibana-pg-elastic:
+  #   container_name: elastic-kibana-pg-elastic
+  #   build:
+  #     context: ./
+  #     dockerfile: ./apps/elastic.Dockerfile
+  #   image: elastic-kibana-pg-elastic
+  #   restart: always
+  #   ports:
+  #     - '127.0.0.1:5432:5432'
+  #   volumes:
+  #     - './volumes/elastic:/var/lib/elastic/'
+  #   network_mode: bridge
+  #   logging:
+  #       options:
+  #           max-size: '50m'
