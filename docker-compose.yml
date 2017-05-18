@@ -1,0 +1,21 @@
+version: '3'
+
+networks:
+  default:
+    external:
+      name: bridge
+
+services:
+  elastic-kibana-pg-postgresql:
+    container_name: elastic-kibana-pg-postgres
+    build:
+      context: ./
+      dockerfile: ./apps/postgres.Dockerfile
+    image: elastic-kibana-pg-postgres
+    restart: always
+    volumes:
+      - './volumes/postgres:/usr/local/var/postgres'
+    network_mode: bridge
+    logging:
+        options:
+            max-size: '50m'
