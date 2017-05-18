@@ -1,6 +1,9 @@
 version: '3'
 
 networks:
+  default:
+    external:
+      name: bridge
   esnet:
 
 volumes:
@@ -10,12 +13,12 @@ volumes:
     driver: local
 
 services:
-  elastic-kibana-pg-postgresql:
-    container_name: elastic-kibana-pg-postgres
+  elkpg-postgresql:
+    container_name: elkpg-postgres
     build:
       context: ./
       dockerfile: ./apps/postgres.Dockerfile
-    image: elastic-kibana-pg-postgres
+    image: elkpg-postgres
     restart: always
     ports:
       - '127.0.0.1:5432:5432'
@@ -27,10 +30,28 @@ services:
         options:
             max-size: '50m'
 
-  elastic-kibana-pg-elastic1:
+  # elkpg-redis:
+  #   container_name: elkpg-redis
+  #   image: redis:3.0
+  #   restart: always
+  #   network_mode: bridge
+  #   logging:
+  #       options:
+  #           max-size: '50m'
+  #
+  # elkpg-logstash:
+  #   container_name: elkpg-logstash
+  #   image: docker.elastic.co/logstash/logstash:5.4.0
+  #   restart: always
+  #   network_mode: bridge
+  #   logging:
+  #       options:
+  #           max-size: '50m'
+
+  elkpg-elastic1:
     image: docker.elastic.co/elasticsearch/elasticsearch:5.4.0
     restart: always
-    container_name: elastic-kibana-pg-elastic1
+    container_name: elkpg-elastic1
     environment:
       - cluster.name=docker-cluster
       - bootstrap.memory_lock=true
@@ -46,15 +67,15 @@ services:
     networks:
       - esnet
 
-  elastic-kibana-pg-elastic2:
+  elkpg-elastic2:
     image: docker.elastic.co/elasticsearch/elasticsearch:5.4.0
     restart: always
-    container_name: elastic-kibana-pg-elastic2
+    container_name: elkpg-elastic2
     environment:
       - cluster.name=docker-cluster
       - bootstrap.memory_lock=true
       - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
-      - "discovery.zen.ping.unicast.hosts=elastic-kibana-pg-elastic2"
+      - "discovery.zen.ping.unicast.hosts=elkpg-elastic1"
     ulimits:
       memlock:
         soft: -1
@@ -65,7 +86,7 @@ services:
       - esnet
 
   kibana:
-    container_name: elastic-kibana-pg-kibana
+    container_name: elkpg-kibana
     image: docker.elastic.co/kibana/kibana:5.4.0
     restart: always
     # volumes:
@@ -75,7 +96,7 @@ services:
     networks:
       - esnet
     environment:
-      ELASTICSEARCH_URL: http://elastic-kibana-pg-elastic1:9200
+      ELASTICSEARCH_URL: http://elkpg-elastic1:9200
     logging:
         options:
             max-size: '50m'
