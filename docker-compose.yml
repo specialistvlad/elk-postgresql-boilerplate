@@ -27,10 +27,10 @@ services:
         options:
             max-size: '50m'
 
-  elasticsearch1:
+  elastic-kibana-pg-elastic1:
     image: docker.elastic.co/elasticsearch/elasticsearch:5.4.0
     restart: always
-    container_name: elasticsearch1
+    container_name: elastic-kibana-pg-elastic1
     environment:
       - cluster.name=docker-cluster
       - bootstrap.memory_lock=true
@@ -46,14 +46,15 @@ services:
     networks:
       - esnet
 
-  elasticsearch2:
+  elastic-kibana-pg-elastic2:
     image: docker.elastic.co/elasticsearch/elasticsearch:5.4.0
     restart: always
+    container_name: elastic-kibana-pg-elastic2
     environment:
       - cluster.name=docker-cluster
       - bootstrap.memory_lock=true
       - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
-      - "discovery.zen.ping.unicast.hosts=elasticsearch1"
+      - "discovery.zen.ping.unicast.hosts=elastic-kibana-pg-elastic2"
     ulimits:
       memlock:
         soft: -1
@@ -74,7 +75,7 @@ services:
     networks:
       - esnet
     environment:
-      ELASTICSEARCH_URL: http://elasticsearch1:9200
+      ELASTICSEARCH_URL: http://elastic-kibana-pg-elastic1:9200
     logging:
         options:
             max-size: '50m'
