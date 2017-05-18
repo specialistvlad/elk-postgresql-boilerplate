@@ -73,7 +73,6 @@ services:
       - 127.0.0.1:5601:5601
     networks:
       - esnet
-      - bridge
     environment:
       ELASTICSEARCH_URL: http://elasticsearch1:9200
     logging:
