@@ -22,4 +22,4 @@ How to stop containers?
 `docker-compose down`
 
 # PS
-Index is: ls-*
+Index is: logstash-*
