@@ -1,4 +1,4 @@
-* Postgresql > csv files > filebeat > logstash
+# Postgresql > csv files > filebeat > logstash
 Setup your Postgresql to write csv files
 `log_destination = 'csvlog'`
 
@@ -9,7 +9,7 @@ Run filebeat with config from project folder
 filebeat/filebeat -e -c filebeat.yml
 
 
-* Logstash > Elastic > Kibana > User
+# Logstash > Elastic > Kibana > User
 Start apps
 `docker-compose up`
 
@@ -23,5 +23,5 @@ credentials: elastic:changeme
 How to stop containers?
 `docker-compose down`
 
-* PS
+# PS
 Index is: ls-*
