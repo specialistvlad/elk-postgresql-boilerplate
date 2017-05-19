@@ -4,40 +4,14 @@ networks:
   esnet:
 
 services:
-  # elkpg-postgresql:
-  #   container_name: elkpg-postgres
-  #   build:
-  #     context: ./
-  #     dockerfile: ./apps/postgres.Dockerfile
-  #   image: elkpg-postgres
-  #   restart: always
-  #   ports:
-  #     - '127.0.0.1:5432:5432'
-  #   volumes:
-  #     - './volumes/postgres:/var/lib/postgresql/data'
-  #     # - '/usr/local/var/postgres/data:/var/lib/postgresql/data'
-  #   network_mode: bridge
-  #   logging:
-  #       options:
-  #           max-size: '50m'
-
-  # elkpg-redis:
-  #   container_name: elkpg-redis
-  #   image: redis:3.0
-  #   restart: always
-  #   network_mode: bridge
-  #   ports:
-  #     - 127.0.0.1:6379:6379
-  #   logging:
-  #       options:
-  #           max-size: '50m'
-
   elkpg-logstash:
     container_name: elkpg-logstash
     image: docker.elastic.co/logstash/logstash:5.4.0
     restart: always
     networks:
       - esnet
+    ports:
+      - 5044:5044
     volumes:
       - ./logstash/pipeline.conf:/usr/share/logstash/pipeline/logstash.conf
       - ./logstash/logstash.yml:/usr/share/logstash/config/logstash.yml
@@ -58,7 +32,6 @@ services:
         soft: -1
         hard: -1
     volumes:
-      # - esdata1:/usr/share/elasticsearch/data
       - ./volumes/esdata1:/usr/share/elasticsearch/data
     ports:
       - 9200:9200
@@ -83,18 +56,16 @@ services:
     networks:
       - esnet
 
-  # kibana:
-  #   container_name: elkpg-kibana
-  #   image: docker.elastic.co/kibana/kibana:5.4.0
-  #   restart: always
-  #   # volumes:
-  #     # - ./kibana.yml:/usr/share/kibana/config/kibana.yml
-  #   ports:
-  #     - 127.0.0.1:5601:5601
-  #   networks:
-  #     - esnet
-  #   environment:
-  #     ELASTICSEARCH_URL: http://elkpg-elastic1:9200
-  #   logging:
-  #       options:
-  #           max-size: '50m'
+  kibana:
+    container_name: elkpg-kibana
+    image: docker.elastic.co/kibana/kibana:5.4.0
+    restart: always
+    ports:
+      - 5601:5601
+    networks:
+      - esnet
+    environment:
+      ELASTICSEARCH_URL: http://elkpg-elastic1:9200
+    logging:
+        options:
+            max-size: '50m'
