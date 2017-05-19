@@ -2,7 +2,7 @@
 Setup your Postgresql to write csv files
 `log_destination = 'csvlog'`
 
-Download (filebeat)[https://www.elastic.co/downloads/beats/filebeat] (download, unzip)
+Download [filebeat](https://www.elastic.co/downloads/beats/filebeat) (download, unzip)
 
 Run filebeat with config from project folder
 filebeat/filebeat -e -c filebeat.yml
@@ -15,7 +15,7 @@ Start apps
 Check elastic cluster health
 `curl http://elastic:changeme@127.0.0.1:9200/_cat/health`
 
-Access (kibana)[http://localhost:5601] web interface(wait up to 1min for first run)
+Access [kibana](http://localhost:5601) web interface(wait up to 1min for first run)
 credentials: elastic:changeme
 
 How to stop containers?
